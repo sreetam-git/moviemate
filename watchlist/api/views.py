@@ -9,11 +9,22 @@ from watchlist.api.serializers import WatchListSerializer, StreamPlatformSeriali
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     
+    def get_queryset(self):
+        return Review.objects.all()
+    
     def perform_create(self, serializer):
         pk = self.kwargs['pk']
         watchlist = WatchList.objects.get(pk=pk)
         
-        serializer.save(watchlist=watchlist)
+        user = self.request.user
+        # print(user)
+        # print('----------------------------------------------------------------')
+        check_user = Review.objects.filter(watchlist=watchlist, review_user=user)
+        if check_user.exists():
+            # print('already exists')
+            return Response({"error": "You have already reviewed this movie"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        response = serializer.save(watchlist=watchlist, review_user=user)
 
 class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
