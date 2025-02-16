@@ -10,15 +10,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         exclude = ['active', 'updated_at', 'watchlist']
 
 class WatchListSerializer(serializers.ModelSerializer):
-    reviews = ReviewSerializer(many=True, read_only=True)
+    # reviews = ReviewSerializer(many=True, read_only=True)
     # len_title = serializers.SerializerMethodField()
     # full_storyline = serializers.SerializerMethodField()
+    platform = serializers.CharField(source = 'platform.name')
+    movie_title = serializers.CharField(source = 'title') # rename title to movie_title
     
     class Meta:
         model = WatchList
         # fields = "__all__"
         # fields = ['id', 'name', 'description']
-        exclude = ['active']
+        exclude = ['active', 'title']
         
     # def get_len_title(self, obj):
     #     return len(obj.title)
